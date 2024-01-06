@@ -2,7 +2,7 @@
   "name": "feishu-doc-helper",
   "displayName": "飞书文档助手",
   "version": "0.0.1",
-  "description": "飞书文档助手：支持批量导出飞书文档，文档随机漫游。",
+  "description": "飞书文档助手：支持批量导出飞书文档，文档随机漫游等功能。",
   "author": "三此君",
   "packageManager": "npm@9.6.2",
   "scripts": {
