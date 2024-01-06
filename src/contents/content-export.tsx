@@ -16,7 +16,7 @@ export const config: PlasmoCSConfig = {
 
 export const getRootContainer = async () => {
     let container;
-    for (let retryCount = 0; retryCount < 20 && !container; retryCount++) {
+    for (let retryCount = 0; retryCount < 50 && !container; retryCount++) {
         await sleep(500)
         container = document.querySelector('.sc-hKwCoD.fgBDdK');
         console.log('root', container);
@@ -30,7 +30,7 @@ const Menu: React.FC = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [cascaderOptions, setCascaderOptions] = useState();
-    const [selectedValue, setSelectedValue] = useState(['全部导出']);
+    const [selectedValue, setSelectedValue] = useState([]);
     const [api, contextHolder] = notification.useNotification();
 
     useEffect(() => {
@@ -54,6 +54,7 @@ const Menu: React.FC = () => {
                         文档导出中，导出速度取决于导出文档数量，当前进度 <span style={{ color: 'blue' }}>{curProgress}</span>， 导出完成前请勿关闭或刷新本页面。
                     </span>
                 ),
+                duration: null,
             });
             await sleep(500);
             let file_extension = file.obj_type == 'sheet' || file.obj_type == 'bitable' ? 'xlsx' : 'docx'
@@ -91,6 +92,7 @@ const Menu: React.FC = () => {
             key: 'export progress notification',
             message: '文档批量导出',
             description: `文档批量导出完成，共导出 ${exportList.length} 篇文档。`,
+            duration: null,
         });
     }
 
@@ -102,12 +104,16 @@ const Menu: React.FC = () => {
 
     const handleOk = () => {
         setIsModalOpen(false);
+        console.log('selectedValue', selectedValue);
+        if(!selectedValue.length) return;
         const selectFolders = selectedValue.map((item) => item[item.length - 1]) || [];
+        console.log('selectFolders', selectFolders);
         onExportDocs(selectFolders);
         api['info']({
             key: 'export progress notification',
             message: '文档批量导出',
             description: `文档批量导出中，导出速度取决于导出文档数量， 导出完成前请勿关闭或刷新本页面。`,
+            duration: null,
         });
     };
 

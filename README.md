@@ -10,8 +10,8 @@
 [![Opera](https://img.shields.io/badge/-Opera-red?logo=Opera)](./build/opera-mv3-prod.zip)
 
 1. 首先，点击上方图标，下载你需要的浏览器插件压缩包。下载好后解压到某个文件夹（比如 `feishu-doc-helper`）。
-   ![image-20230603145959878](https://img2023.cnblogs.com/blog/2740513/202306/2740513-20230603150001391-1222145165.png)
-   [百度云下载地址（可能不是最新版）](https://pan.baidu.com/s/1TKgvpArGmRSvDkS-pTVV5g?pwd=8ssd)
+   ![image-20230603145959878](https://cdn.jsdelivr.net/gh/sancijun/images/pics/image-20240106180600650.png)
+   [百度云下载地址（可能不是最新版）](https://pan.baidu.com/s/15V-Zd6IpqgJhOTV9FuH4mA?pwd=fnmv)
 2. 接下来，进入 Chrome 在地址栏输入 `chrome://extensions/` 后回车，进入扩展管理页面。
 3. 进入页面后，先打开 `开发者模式`，再点击 `加载已解压的扩展程序`，找到前面解压得到的文件夹 `weread-toobox`，**单击**该文件夹，这时候文件夹被选中，点击 `选择文件夹` 即可。
 
@@ -35,3 +35,9 @@
 [我开发了一款 Obsidian 图床插件，全都进来薅羊毛！](https://www.bilibili.com/video/BV15P411a7C6)
 
 [一张图进阶 RocketMQ 系列，妥妥的收藏级宝藏系列！](https://www.bilibili.com/video/BV1534y157RF)
+
+## 联系作者
+
+使用过程中有任何问题您可以通过以下方式联系 三此君。
+
+![联系三此君](https://img2022.cnblogs.com/blog/2740513/202207/2740513-20220706204136402-778725152.webp)

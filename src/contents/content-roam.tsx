@@ -14,7 +14,7 @@ export const config: PlasmoCSConfig = {
 
 export const getRootContainer = async () => {
     let referenceElement;
-    for (let retryCount = 0; retryCount < 20 && !referenceElement; retryCount++) {
+    for (let retryCount = 0; retryCount < 50 && !referenceElement; retryCount++) {
         await sleep(500)
         referenceElement = document.querySelector('.new-notice-wrapper') || document.querySelector('.suite-notice-center');
         console.log('root', referenceElement);

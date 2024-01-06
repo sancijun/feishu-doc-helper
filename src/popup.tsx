@@ -94,7 +94,7 @@ function SettingsPageContent() {
   return (
     <>
       <Paragraph style={{ fontSize: '15px', padding: '5px' }}>
-        选择文档漫游需要排除的目录，文档漫游的，选中目录下的文档将不会被打开。
+        选择文档漫游需要排除的目录，文档漫游时，选中目录下的文档将不会被打开。
       </Paragraph>
       <Cascader options={cascaderOptions} multiple onChange={handleCascaderChange} placeholder="选择文档漫游需要排除的目录" value={selectedValue} style={{ width: '100%', marginTop: '10px', marginBottom: '20px' }} />
     </>
