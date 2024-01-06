@@ -1,0 +1,21 @@
+.plasmo-csui-container button {
+  width: 30px !important;
+  height: 30px !important;
+  padding: 4px !important;
+}
+
+.plasmo-csui-container {
+  position: relative !important;
+}
+
+#plasmo-overlay-0>div {
+  position: absolute !important;
+  bottom: 0px !important;
+  left: 0px !important;
+}
+
+.plasmo-csui-container svg {
+  color: rgb(100, 106, 115) !important;
+  width: 20px;
+  height: 20px;
+}
