@@ -5,7 +5,7 @@
 
 [![Chrome](https://img.shields.io/badge/-Chrome-brightgreen?logo=GoogleChrome)](./build/chrome-mv3-prod.zip)
 [![Edge](https://img.shields.io/badge/-Edge-blue?logo=MicrosoftEdge)](./build/edge-mv3-prod.zip)
-[![Mozilla add<span data-type=](https://img.shields.io/badge/-Firefox-brightgreen?logo=FirefoxBrowser)\-on: Firefox&#34; /&gt;](./build/firefox-mv2-prod.zip)
+[![Mozilla add<span data-type=](https://img.shields.io/badge/-Firefox-brightgreen?logo=FirefoxBrowser)](./build/firefox-mv2-prod.zip)
 [![Brave](https://img.shields.io/badge/-Brave-yellow?logo=Brave)](./build/brave-mv3-prod.zip)
 [![Opera](https://img.shields.io/badge/-Opera-red?logo=Opera)](./build/opera-mv3-prod.zip)
 
@@ -18,6 +18,7 @@
 ## 功能
 
 1. 批量导出飞书文档：批量（全量）导出飞书云文档，飞书云文档中的数据更加可控。
+   ![image-20240113130329864](https://cdn.jsdelivr.net/gh/sancijun/images/pics/image-20240113130329864.png)
 2. 文档随机漫游：随机打开一篇飞书云文档，用于复习云文档中的内容，可以进一步总结整理文档之间的关系，构建自己的知识图谱。
 3. 更多功能开发中，你可以在插件关于页面，提出你的功能建议。
 
