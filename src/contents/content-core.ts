@@ -22,23 +22,31 @@ function initMessageListener() {
 }
 
 async function loadAllFileList() {
+    console.log('loadAllFileList');
     const currentTime = new Date().getTime();
     const lastLoadTime = await getLocalStorageData('lastLoadTime') as number;
     const lastHostName = await getLocalStorageData('lastHostName') as string;
     console.log(currentTime, lastLoadTime, lastHostName)
     if (lastLoadTime && (currentTime - lastLoadTime < 30 * 60 * 1000)
         && lastHostName && lastHostName == window.location.hostname) {
+        console.log('loadAllFileList skip');
         return;
     }
     const fileList = [];
     const folderList = [];
-    const resp = await fetchFolders()
-    for (const token of resp.node_list) {
-        const folder = resp.entities.nodes[token]
+
+    const mySpaceFolder = await fetchFolders()
+    const shareSpaceFolder = await fetchShareFolders();
+    const allFolder = new Set([...mySpaceFolder.node_list, ...shareSpaceFolder.node_list]);
+    console.log("mySpaceFolder", mySpaceFolder, "shareSpaceFolder", shareSpaceFolder, "allFolder", allFolder);
+    for (const token of allFolder) {
+        const folder = mySpaceFolder.entities.nodes[token] || shareSpaceFolder.entities.nodes[token];
         folderList.push({ path: folder.name, token: folder.token });
         await getFileList(token, folder.name, fileList, folderList);
     }
-    console.log("load result: ", fileList, folderList);
+    await getFileList('', '我的空间', fileList, folderList);
+    folderList.push({ path: '我的空间', token: '' });
+    console.log("load result, fileList", fileList, "folderList", folderList);
     chrome.storage.local.set({ 'lastLoadTime': new Date().getTime() });
     chrome.storage.local.set({ 'lastHostName': window.location.hostname });
     chrome.storage.local.set({ 'feishuFileList': fileList });
@@ -47,7 +55,7 @@ async function loadAllFileList() {
 
 async function getFileList(token: string, folder_path: string, fileList: [], folderList: []) {
 
-    const ret = await fetchChildrenList(token)
+    const ret = token ? await fetchChildrenList(token) : await fetchMySpaceFileList();
 
     for (const nodeId of ret.data.node_list) {
         const node = ret.data.entities.nodes[nodeId];
@@ -55,8 +63,7 @@ async function getFileList(token: string, folder_path: string, fileList: [], fol
             await getFileList(node.token, `${folder_path}/${node.name}`, fileList, folderList);
             let path = `${folder_path}/${node.name}`;
             folderList.push({ path: path, token: node.token });
-        } else if (node.token != token && node.type != 0
-            && node.url.includes(window.location.hostname)) {
+        } else if (node.token != token && node.type != 0) {
             let url_parts = node.url.split('/');
             let type = url_parts[url_parts.length - 2]
             if (type == 'base') {
@@ -78,9 +85,20 @@ async function fetchFolders() {
     return json.data;
 }
 
+async function fetchShareFolders() {
+    await sleep(500);
+    const json = await getJson(`${window.location.origin}/space/api/explorer/v2/share/folder/list/?asc=0&rank=3&hidden=0&length=50`);
+    return json.data;
+}
+
 async function fetchChildrenList(token: string) {
     await sleep(500);
     return await getJson(`${window.location.origin}/space/api/explorer/v3/children/list/?asc=1&rank=5&token=${token}`);
+}
+
+async function fetchMySpaceFileList() {
+    await sleep(500);
+    return await getJson(`${window.location.origin}/space/api/explorer/v3/my_space/obj/`);
 }
 
 async function createExportTask(data: {}, url: string, type: string) {
