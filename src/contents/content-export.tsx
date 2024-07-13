@@ -98,6 +98,15 @@ const Menu: React.FC = () => {
 
     const showModal = async () => {
         const lastFolderList = await getLocalStorageData('feishuFolderList') as [];
+        if (!lastFolderList || lastFolderList.length === 0) {
+            api['info']({
+                key: 'export progress notification',
+                message: '文档批量导出',
+                description: `数据加载中，请不要刷新页面，稍后重试……`,
+                duration: null,
+            });
+            return;
+        }
         setCascaderOptions(cascaderData(lastFolderList));
         setIsModalOpen(true);
     };
