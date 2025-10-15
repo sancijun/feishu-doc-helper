@@ -1,10 +1,9 @@
 {
   "name": "feishu-doc-helper",
   "displayName": "飞书文档助手",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "飞书文档助手：支持批量导出飞书文档，文档随机漫游等功能。",
   "author": "三此君",
-  "packageManager": "npm@9.6.2",
   "scripts": {
     "dev": "plasmo dev",
     "dev:firefox": "plasmo dev --target=firefox-mv2",
@@ -24,7 +23,7 @@
     "crypto-js": "^4.1.1",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
-    "plasmo": "0.74.2",
+    "plasmo": "0.90.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "uuid": "^9.0.0"
@@ -56,6 +55,16 @@
     ],
     "host_permissions": [
       "*://*.feishu.cn/*"
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "assets/qrcode/*.png"
+        ],
+        "matches": [
+          "<all_urls>"
+        ]
+      }
     ]
   }
 }

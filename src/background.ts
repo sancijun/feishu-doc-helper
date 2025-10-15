@@ -1,67 +1,162 @@
 
-// 监听消息
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    console.log('background onMessage: ', msg);
-    let tabId: number | undefined;
-    if (sender && sender.tab) tabId = sender.tab.id;
-    switch (msg.type) {
-        case 'getCookies':
-            getCookies(msg.fieldName, msg.url).then((content) => {
-                sendResponse({ fieldValue: content });
-            });
-            return true;
-        case 'fetch':
-            if (!msg.url) return;
-            fetch(msg.url, msg.init).then(resp => {
-                console.log('resp', resp);
-                let contentType = msg.init.headers['content-type'];
-                if (contentType === undefined || contentType === 'application/json')
-                    return resp.json();
-                else if (contentType === 'text/plain')
-                    return resp.text();
-            }).then(data => {
-                sendResponse({ data: data });
-            });
-            break;
+import { analytics } from './utils/baidu-analytics';
+
+/**
+ * @description 监听扩展安装事件
+ */
+chrome.runtime.onInstalled.addListener(async (details) => {
+    if (details.reason === 'install') {
+        await analytics.trackInstall();
     }
-    return true;
 });
 
-// Send message to content script
+/**
+ * @description 设置卸载URL
+ */
+const uninstallUrl = 'https://support.qq.com/product/657859';
+chrome.runtime.setUninstallURL(uninstallUrl, () => {
+    if (chrome.runtime.lastError) {
+        console.error('设置卸载URL时出错:', chrome.runtime.lastError);
+    }
+});
+
+/**
+ * @description 监听来自内容脚本的消息
+ */
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    console.log('[background.ts] Received message:', msg);
+    let tabId: number | undefined;
+    if (sender && sender.tab) tabId = sender.tab.id;
+
+    switch (msg.type) {
+        case 'getCookies':
+            if (!msg.fieldName || !msg.url) {
+                console.error('[background.ts] Invalid getCookies message:', msg);
+                sendResponse({ error: 'Invalid parameters for getCookies' });
+                return false; // 同步返回false表示不会异步发送响应
+            }
+            getCookies(msg.fieldName, msg.url).then((content) => {
+                console.log(`[background.ts] Sending cookie response for ${msg.fieldName}:`, content);
+                sendResponse({ fieldValue: content });
+            }).catch(error => {
+                console.error('[background.ts] Error getting cookies:', error);
+                sendResponse({ error: error.message });
+            });
+            return true; // 异步返回响应
+
+        case 'fetch':
+            if (!msg.url) {
+                console.error('[background.ts] Invalid fetch message: URL is missing');
+                sendResponse({ error: 'URL is required for fetch' });
+                return false;
+            }
+            console.log(`[background.ts] Fetching URL: ${msg.url}`);
+            fetch(msg.url, msg.init).then(resp => {
+                if (!resp.ok) {
+                    console.error(`[background.ts] Fetch failed with status: ${resp.status}`);
+                    throw new Error(`Fetch failed with status: ${resp.status}`);
+                }
+                console.log('[background.ts] Fetch response:', resp);
+                let contentType = msg.init?.headers?.['content-type'] || resp.headers.get('content-type');
+                if (contentType?.includes('application/json')) {
+                    return resp.json();
+                } else if (contentType?.includes('text/plain')) {
+                    return resp.text();
+                } else {
+                    return resp.blob(); // 默认处理为二进制数据
+                }
+            }).then(data => {
+                console.log('[background.ts] Sending fetch data response:', data);
+                sendResponse({ data: data });
+            }).catch(error => {
+                console.error('[background.ts] Fetch error:', error);
+                sendResponse({ error: error.message });
+            });
+            return true; // 异步返回响应
+
+        default:
+            console.warn('[background.ts] Unknown message type:', msg.type);
+            sendResponse({ error: `Unknown message type: ${msg.type}` });
+            return false;
+    }
+});
+
+/**
+ * @description 向内容脚本发送消息
+ * @param sendMsg 包含tabId和message的对象
+ * @returns 返回一个Promise，解析为内容脚本的响应
+ */
 async function sendMessage(sendMsg: { tabId?: number; message: any; }) {
-    return new Promise((res, rej) => {
-        let callbackHandler = (response: any) => {
-            if (chrome.runtime.lastError) return rej();
-            if (response) return res(response);
+    console.log('[background.ts] Sending message:', sendMsg);
+    return new Promise((resolve, reject) => {
+        const callbackHandler = (response: any) => {
+            if (chrome.runtime.lastError) {
+                console.error('[background.ts] sendMessage error:', chrome.runtime.lastError);
+                return reject(chrome.runtime.lastError);
+            }
+            if (response) {
+                console.log('[background.ts] Received response for message:', response);
+                return resolve(response);
+            }
         }
 
-        if (sendMsg.tabId != undefined) {
+        if (sendMsg.tabId !== undefined) {
             chrome.tabs.sendMessage(sendMsg.tabId, sendMsg.message, callbackHandler);
         } else {
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                if (!tabs[0]) return rej();
-                chrome.tabs.sendMessage(tabs[0].id!, sendMsg.message, callbackHandler);
+                if (!tabs || tabs.length === 0 || !tabs[0].id) {
+                    console.error('[background.ts] No active tab found to send message.');
+                    return reject(new Error('No active tab found'));
+                }
+                chrome.tabs.sendMessage(tabs[0].id, sendMsg.message, callbackHandler);
             });
         }
-    }).catch((error) => { console.log(error); });
+    }).catch((error) => {
+        console.error('[background.ts] sendMessage promise rejected:', error);
+    });
 }
 
-async function getLocalStorageData(key) {
+/**
+ * @description 从本地存储中获取数据
+ * @param key 要获取的数据的键
+ * @returns 返回一个Promise，解析为存储的数据
+ */
+async function getLocalStorageData(key: string | string[] | { [key: string]: any; } | null) {
+    console.log(`[background.ts] Getting local storage data for key:`, key);
     return new Promise((resolve) => {
         chrome.storage.local.get(key, (result) => {
-            resolve(result[key]);
+            console.log(`[background.ts] Got local storage data:`, result);
+            resolve(result);
         });
     });
 }
 
+/**
+ * @description 暂停执行指定的毫秒数
+ * @param ms 暂停的毫秒数
+ * @returns 返回一个在指定时间后解析的Promise
+ */
 function sleep(ms: number): Promise<void> {
+    console.log(`[background.ts] Sleeping for ${ms}ms`);
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/**
+ * @description 获取指定URL的Cookie
+ * @param fieldName Cookie的名称
+ * @param url Cookie所在的URL
+ * @returns 返回一个Promise，解析为Cookie的值，如果不存在则为null
+ */
 async function getCookies(fieldName: string, url: string): Promise<string | null> {
-    return new Promise((resolve) => {
+    console.log(`[background.ts] Getting cookie '${fieldName}' for URL '${url}'`);
+    return new Promise((resolve, reject) => {
         chrome.cookies.get({ name: fieldName, url: url }, (cookie) => {
+            if (chrome.runtime.lastError) {
+                console.error('[background.ts] getCookies error:', chrome.runtime.lastError);
+                return reject(chrome.runtime.lastError);
+            }
             const fieldValue = cookie ? cookie.value : null;
+            console.log(`[background.ts] Got cookie value: ${fieldValue}`);
             resolve(fieldValue);
         });
     });

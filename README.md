@@ -1,5 +1,5 @@
 <h2 align="center"><img src="assets/icon.png" height="128"><br></h2>
-<p align="center"><strong>飞书文档助手，支持批量导出飞书云文档，文档随机漫游等功能。</strong></p>
+<p align="center"><strong>飞书文档助手，支持批量导出飞书云文档及飞书知识库，文档随机漫游等功能。</strong></p>
 
 ## 安装
 
@@ -13,7 +13,7 @@
    ![image-20230603145959878](https://cdn.jsdelivr.net/gh/sancijun/images/pics/image-20240106180600650.png)
    [百度云下载地址（可能不是最新版）](https://pan.baidu.com/s/15V-Zd6IpqgJhOTV9FuH4mA?pwd=fnmv)
 2. 接下来，进入 Chrome 在地址栏输入 `chrome://extensions/` 后回车，进入扩展管理页面。
-3. 进入页面后，先打开 `开发者模式`，再点击 `加载已解压的扩展程序`，找到前面解压得到的文件夹 `weread-toobox`，**单击**该文件夹，这时候文件夹被选中，点击 `选择文件夹` 即可。
+3. 进入页面后，先打开 `开发者模式`，再点击 `加载已解压的扩展程序`，找到前面解压得到的文件夹 `feishu-doc-helper`，**单击**该文件夹，这时候文件夹被选中，点击 `选择文件夹` 即可。
 
 ## 功能
 
