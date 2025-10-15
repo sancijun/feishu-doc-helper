@@ -258,7 +258,7 @@ export async function createExportTask(data: { token: string; obj_type: number }
  */
 export async function fetchExportResult(ticket: string, obj_token: string, obj_type: number) {
     console.log(`[fetchExportResult] fetching export result for ticket: ${ticket}`);
-    await sleep(500);
+    await sleep(2000);
     if (!ticket) {
         console.warn('[fetchExportResult] ticket is null');
         return null;

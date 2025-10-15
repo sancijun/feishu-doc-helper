@@ -1,23 +1,21 @@
 
 import { analytics } from './utils/baidu-analytics';
 
-/**
- * @description 监听扩展安装事件
- */
-chrome.runtime.onInstalled.addListener(async (details) => {
-    if (details.reason === 'install') {
-        await analytics.trackInstall();
-    }
+// 扩展安装时的统计上报
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    // 扩展首次安装
+    analytics.trackInstall().catch(console.warn);
+    analytics.trackPageView('/extension/installed', 'Extension Installed').catch(console.warn);
+  } else if (details.reason === 'update') {
+    // 扩展更新
+    analytics.trackPageView(`/extension/updated/${details.previousVersion}-to-${chrome.runtime.getManifest().version}`, `扩展更新-${details.previousVersion}-to-${chrome.runtime.getManifest().version}`).catch(console.warn);
+  }
 });
 
-/**
- * @description 设置卸载URL
- */
-const uninstallUrl = 'https://support.qq.com/product/657859';
-chrome.runtime.setUninstallURL(uninstallUrl, () => {
-    if (chrome.runtime.lastError) {
-        console.error('设置卸载URL时出错:', chrome.runtime.lastError);
-    }
+// 扩展启动时的统计上报
+chrome.runtime.onStartup.addListener(() => {
+  analytics.trackPageView('/extension/startup', '扩展启动').catch(console.warn);
 });
 
 /**

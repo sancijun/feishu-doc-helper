@@ -80,7 +80,7 @@ const Menu: React.FC = () => {
             });
 
             let count = 0;
-            const batchSize = 5; // 设置批处理大小为5
+            const batchSize = 2; // 设置批处理大小为2
 
             for (let i = 0; i < exportList.length; i += batchSize) {
                 const batch = exportList.slice(i, i + batchSize);

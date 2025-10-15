@@ -1,8 +1,8 @@
 {
   "name": "feishu-doc-helper",
   "displayName": "飞书文档助手",
-  "version": "1.0.2",
-  "description": "飞书文档助手：支持批量导出飞书文档，文档随机漫游等功能。",
+  "version": "1.0.3",
+  "description": "飞书文档助手：支持批量导出飞书云文档及知识库，文档随机漫游等功能。",
   "author": "三此君",
   "scripts": {
     "dev": "plasmo dev",
